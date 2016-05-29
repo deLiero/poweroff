@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="lib/normalize.css">
+    <link rel="stylesheet" href="style/fonts.css"/>
+    <link rel="stylesheet" href="style/main.css">
+    <title>deLiero powerOFF 0.1.0</title>
+</head>
+<body tabindex="-1">
+    <div class="container" tabindex="-1">
+        <div class="header">
+            <span>текущее время</span>&nbsp;<span id="cur-time" class="cur-time">20:37:40</span>
+        </div>
+        <div class="main">
+            <div class="left">
+                <div class="arrows -top">
+                    <div id="arr_h_up" class="triangle triangle-up -first"></div>
+                    <div id="arr_m_up" class="triangle triangle-up -second"></div>
+                </div>
+                <div class="input_block">
+                    <input id="hour-input" type="text" class="user-input -left" value="00" maxlength="2" tabindex="-1" disabled>
+                    <input id="min-input" type="text" class="user-input" value="00" maxlength="2" tabindex="-1" disabled>
+                    <div class="dots">:</div>
+                </div>
+                <div class="arrows">
+                    <div id="arr_h_down" class="triangle triangle-down -first"></div>
+                    <div id="arr_m_down" class="triangle triangle-down -second"></div>
+                </div>
+            </div>
+            <div class="right"><button id="timer-button" class="button" tabindex="-1">старт</button></div>
+        </div>
+        <div class="footer">
+            <div id="progress" class="progress" style="width: 100%"></div>
+        </div>
+        <div id="error-box">
+            <span class="error-warn">!</span>
+            <span id="error-message" class="error-message"></span>
+        </div>
+     </div>
+    <script src="js/client.js"></script>
+</body>
+</html>

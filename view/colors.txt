@@ -1,0 +1,7 @@
+bg: #222428
+
+btn-start: #52ac62
+btn-stop: #d24a43
+btn-warn: #ffeb7a
+
+font: #fff

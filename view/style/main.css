@@ -1,0 +1,215 @@
+/* BASIC */
+html, body {
+    font-family: "SegoeUIRegular", sans-serif;
+    font-size: 14px;
+    width: 100%;
+    height: 100%;
+    -webkit-user-select: none;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+div {
+    box-sizing: border-box;
+}
+/* END BASIC */
+
+/* ROOT */
+.container {
+    background-color: #232428;
+    margin: 0 auto;
+    width: 100%;
+    height: 100%;
+    color: #fff;
+}
+/* END ROOT */
+
+/* HEADER */
+.header {
+    padding: 5px 10px;
+}
+
+.cur-time {
+    font-weight: bold;
+}
+
+/* MAIN */
+
+.left {
+    float: left;
+    padding: 40px 0 0 55px;
+    width: 50%;
+}
+
+.right {
+    margin-left: 50%;
+    padding-top: 35px;
+    text-align: center;
+}
+
+/* START/STOP BUTTON */
+/* default button */
+.button {
+    background-color: rgba(82, 172, 98, 0.1);
+    font-size: 24px;
+    color: #fff;
+    border: 2px solid #52ac62;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    transition: box-shadow .2s linear, color .2s linear;
+    padding-bottom: 10px;
+    cursor: pointer;
+    outline: none;
+}
+
+.button:hover {
+    box-shadow: 0 0 10px #52ac62;
+}
+/* end default button */
+
+/* active button */
+.button.active {
+    background-color: rgba(210, 74, 67, 0.1);
+    border: 2px solid #d24a43;
+}
+
+.button.active:hover {
+    box-shadow: 0 0 10px #d24a43;
+}
+/* end active button */
+
+/* warn button */
+.button.warn {
+    background-color: rgba(255, 235, 122, 0.1);
+    border: 2px solid #ffeb7a;
+}
+
+.button.warn:hover {
+    box-shadow: 0 0 10px #ffeb7a;
+}
+/* end warn button */
+/* END START/STOP BUTTON */
+
+
+/* input block */
+.input_block {
+    margin: 10px 0;
+    position: relative;
+}
+
+.dots {
+    font-size: 60px;
+    left: 82px;
+    position: absolute;
+    top: -14px;
+}
+
+@keyframes anim_0 {
+    0% {opacity: 0}
+    100% {opacity: 1}
+}
+
+.dots.anim {
+    animation: anim_0 1s infinite;
+}
+
+.user-input {
+    background-color: transparent;
+    border: none;
+    box-sizing: border-box;
+    padding-bottom: 10px;
+    color: #fff;
+    display: block;
+    font-size: 72px;
+    height: 72px;
+    outline: none;
+    width: 50%;
+    -webkit-user-select: none;
+}
+
+.user-input.-left {
+    float: left;
+}
+
+/* end input block */
+/* END MAIN */
+
+/* ARROWS */
+.arrows {
+    padding-left: 30px;
+}
+
+/* triangle */
+.triangle {
+    height: 0;
+    opacity: 0.5;
+    transition: opacity 0.2s linear;
+    width: 0;
+}
+
+.triangle:hover {
+    opacity: 1.0;
+}
+
+.triangle.-first {
+    float: left;
+}
+
+.triangle.-second {
+    margin-left: 100px;
+}
+
+.triangle.triangle-up {
+    border-left: 11px solid transparent;
+    border-right: 11px solid transparent;
+    border-bottom: 12px solid #fff;
+}
+
+.triangle.triangle-down {
+    border-left: 11px solid transparent;
+    border-right: 11px solid transparent;
+    border-top: 12px solid #fff;
+}
+/* end triangle */
+/* END ARROWS */
+
+/* ERROR BOX */
+#error-box {
+    position: fixed;
+    background-color: #ffeb7a;
+    color: #333;
+    top: -30px;
+    left: 0;
+    right: 0;
+    padding: 5px 10px;
+    max-height: 30px;
+    transition: top 0.2s linear;
+}
+
+.error-warn {
+    font-family: 'SegoeUISemiBold', sans-serif;
+    font-weight: bold;
+}
+
+.error-message {
+    display: inline-block;
+    padding-left: 5px;
+}
+
+
+/*TEST*/
+.footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+}
+
+.progress {
+    height: 5px;
+    background-color: #52ac62;
+    transition: width .1s linear;
+    display: none;
+}
