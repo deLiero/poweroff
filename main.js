@@ -53,9 +53,8 @@ function createWindow () {
   timer.setTickRate(1); // 1000ms/2
 
   timer.on('timed',turnOff = function () {
-      // turn off power
-      //cmd = spawn('shutdown', ['/s','/t', '0']);
-      cmd = spawn('notepad');
+      // turn off power window
+      cmd = spawn('shutdown', ['/s','/t', '0']);
 
       cmd.on('error', function (err) {
           // отобразить диалог и закрыть приложение
