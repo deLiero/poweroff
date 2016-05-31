@@ -16,7 +16,7 @@ var errorMessageElem = document.getElementById('error-message');
 var active = false; // запущен ли таймер
 var errorTimeoutId = null; // управление показом ошибки
 
-//TODO delete
+// линия прогресса таймера
 var progressElem = document.getElementById('progress');
 
 // node syntax
@@ -68,8 +68,6 @@ function changeHour(state) {
         h++;
     } else if (state === 0) {
         h--;
-    } else {
-        //TODO error;
     }
 
     if (h < 0) {
@@ -104,8 +102,6 @@ function changeMinute(state) {
         m++;
     } else if (state === 0) {
         m--;
-    } else {
-        //TODO error;
     }
 
     if (m < 0) {
@@ -127,7 +123,6 @@ function changeMinute(state) {
 
 function showMessage(msg) {
     if (errorTimeoutId) {
-        console.log('message shown');
         return;
     }
     errorMessageElem.innerHTML = msg;
@@ -229,7 +224,7 @@ win.on('timer:started', function () {
     // отобразить состояние кнопки стоп
     timerButtonElem.js_stop();
 
-    //TODO delete
+    // показать линию прогресса
     progressElem.style.display = 'block';
 });
 
@@ -246,7 +241,7 @@ win.on('timer:stopped', function () {
     // отобразить сосотояние кнопки старт
     timerButtonElem.js_start();
 
-    //TODO delete
+    // восстановить прогресс линию
     progressElem.style.width = '100%';
     progressElem.style.display = 'none';
 });

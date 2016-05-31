@@ -1,6 +1,3 @@
-// jshint esversion: 6
-//TODO добавить конфиги для параметров окна и значения по умолчанию
-
 const electron = require('electron');
 
 // Module to control application life.
@@ -12,52 +9,63 @@ const BrowserWindow = electron.BrowserWindow;
 // нативные диалоговые окна
 const dialog = electron.dialog;
 
+const path = require('path');
+
+const nconf = require('nconf');
+nconf.argv().env().file({file: path.join(__dirname, 'config.cfg')});
+
 // подключаем таймер
-var timer = require('./timer');
+var timer = require(path.join(__dirname,'timer'));
 
 const spawn = require('child_process').spawn;
 var cmd = null;
 
+const AppError = require(path.join(__dirname,'error')).AppError;
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
+var mainWindow;
 
-//TODO handlers возможно просто удалить все обработчики событий
-let timerToggle, timerStop, timerStart, turnOff, timerTick;
+//обработчики событий таймера
+var  timerToggle, timerStop, timerStart, turnOff, timerTick, timerError;
 
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-      width: 528,
-      height: 300,
-      center: true,
-      resizable: false,
-      maximizable: false
-      //icon: './icon.ico'
+      width: nconf.get('window:width') || 528,
+      height: nconf.get('window:height') || 300,
+      center: nconf.get('window:center') || true,
+      resizable: nconf.get('window:resizable') || false,
+      maximizable:  nconf.get('window:maximizable') || false,
+      icon: path.join(__dirname, nconf.get('window:icon')) || './icon.ico'
   });
 
   // скрыть дефолтное меню
   mainWindow.setMenu(null);
 
   // and load the index.html of the app.
-  mainWindow.loadURL('file://' + __dirname + '/view/index.html');
+  mainWindow.loadURL('file://' + path.join(__dirname, 'view/index.html'));
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  //mainWindow.webContents.openDevTools();
 
   // установить частоту опроса таймера
-  timer.setTickRate(2); // 1000ms/2
+  timer.setTickRate(1); // 1000ms/2
 
   timer.on('timed',turnOff = function () {
       // turn off power
       //cmd = spawn('shutdown', ['/s','/t', '0']);
-      //cmd = spawn('notepad');
-      console.log('TIMED');
-      dialog.showErrorBox('ошибка', 'отключение компьютера');
+      cmd = spawn('notepad');
+
+      cmd.on('error', function (err) {
+          // отобразить диалог и закрыть приложение
+          dialog.showErrorBox('Критическая ошибка', err.stack);
+          app.exit(1);
+      });
   });
 
   // обработка ошибок таймера
-  timer.on('error', function (err) {
+  timer.on('error', timerError = function (err) {
       if (err.code == 99) {
         mainWindow.emit('timer:error', err);
         dialog.showErrorBox('ERROR', err.message);
@@ -67,7 +75,6 @@ function createWindow () {
   });
 
   timer.on('tick', timerTick = function (state) {
-      console.log(state);
       mainWindow.emit('timer:tick', state);
   });
 
@@ -96,7 +103,17 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null;
 
-    //TODO удалить обработчики с timer
+    //удалить обработчики с timer
+    try {
+        timer.removeListener('timed', turnOff);
+        timer.removeListener('error', timerError);
+        timer.removeListener('tick', timerTick);
+        timer.removeListener('started', timerStart);
+        timer.removeListener('stopped', timerStop);
+    }catch(err) {
+        app.quit(); // выход из приложения
+        throw new AppError(99, 1, err.message);
+    }
   });
 }
 

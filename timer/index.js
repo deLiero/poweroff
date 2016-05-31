@@ -54,7 +54,7 @@ module.exports = (function () {
             }
             tickRate = rate;
         } catch (err) {
-            _timer.emit('error', err);
+            _timer.emit('error', new AppError(99, 1, err.message));
         }
     }
 
@@ -149,7 +149,7 @@ module.exports = (function () {
             return;
         }
 
-        // расчет времени в секундах с 00:00
+        // расчет времени в ms с 00:00
         var finFullTime = (time.h * 3600 + time.m * 60)*1000;
         var curFullTime = (curH * 3600 + curM * 60  + curS) * 1000 + date.getMilliseconds();
 
@@ -162,8 +162,6 @@ module.exports = (function () {
 
         // при первом запуске запомнить общее время
         if (firstRun) {
-          //TODO DELETE
-            console.log('totaltime: ' + finFullTime);
             totalTime = finFullTime;
             firstRun = false;
         }

@@ -187,11 +187,6 @@ div {
     transition: top 0.2s linear;
 }
 
-.error-warn {
-    font-family: 'SegoeUISemiBold', sans-serif;
-    font-weight: bold;
-}
-
 .error-message {
     display: inline-block;
     padding-left: 5px;
@@ -210,6 +205,6 @@ div {
 .progress {
     height: 5px;
     background-color: #52ac62;
-    transition: width .1s linear;
+    transition: width 1.2s linear;
     display: none;
 }

@@ -4,9 +4,6 @@
 //   0 - warning
 //   1 - critical
 // message string
-
-//TODO Добавить конфиги
-
 const util = require('util');
 
 // Объект с описание ошибок
