@@ -1,4 +1,5 @@
 // jshint esversion: 6
+//TODO добавить конфиги для параметров окна и значения по умолчанию
 
 const electron = require('electron');
 
@@ -13,7 +14,6 @@ const dialog = electron.dialog;
 
 // подключаем таймер
 var timer = require('./timer');
-timer.setTickRate(2);
 
 const spawn = require('child_process').spawn;
 var cmd = null;
@@ -22,6 +22,9 @@ var cmd = null;
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
+//TODO handlers возможно просто удалить все обработчики событий
+let timerToggle, timerStop, timerStart, turnOff, timerTick;
+
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -29,47 +32,54 @@ function createWindow () {
       height: 300,
       center: true,
       resizable: false,
-      maximizable: false,
-      icon: './icon.ico'
+      maximizable: false
+      //icon: './icon.ico'
   });
 
   // скрыть дефолтное меню
   mainWindow.setMenu(null);
 
-  // and load the index1.html of the app.
+  // and load the index.html of the app.
   mainWindow.loadURL('file://' + __dirname + '/view/index.html');
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 
-  timer.on('timed', function () {
+  // установить частоту опроса таймера
+  timer.setTickRate(2); // 1000ms/2
+
+  timer.on('timed',turnOff = function () {
       // turn off power
       //cmd = spawn('shutdown', ['/s','/t', '0']);
-      cmd = spawn('notepad');
+      //cmd = spawn('notepad');
+      console.log('TIMED');
+      dialog.showErrorBox('ошибка', 'отключение компьютера');
   });
 
+  // обработка ошибок таймера
   timer.on('error', function (err) {
-      if (err.message === 'текущая дата и дата выключения равны') {
-          mainWindow.emit('timer:incorrect', err);
-      } else {
-          mainWindow.emit('timer:error', err);
-          dialog.showErrorBox('ERROR', 'Критическая ошибка. Перезапустите приложение!');
+      if (err.code == 99) {
+        mainWindow.emit('timer:error', err);
+        dialog.showErrorBox('ERROR', err.message);
+      }else {
+        mainWindow.emit('timer:error', err);
       }
   });
 
-  timer.on('tick', function (state) {
+  timer.on('tick', timerTick = function (state) {
+      console.log(state);
       mainWindow.emit('timer:tick', state);
   });
 
-  timer.on('started', function (tickDate) {
+  timer.on('started', timerStart = function (tickDate) {
       mainWindow.emit('timer:started');
   });
 
-  timer.on('stopped', function (tickDate) {
+  timer.on('stopped', timerStop = function (tickDate) {
       mainWindow.emit('timer:stopped');
   });
 
-  mainWindow.on('timer:toggle', function (h, m) {
+  mainWindow.on('timer:toggle', timerToggle = function (h, m) {
      if(timer.isRun()) {
          timer.stop();
      } else {
@@ -85,6 +95,8 @@ function createWindow () {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
+
+    //TODO удалить обработчики с timer
   });
 }
 
@@ -109,6 +121,3 @@ app.on('activate', function () {
     createWindow();
   }
 });
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.

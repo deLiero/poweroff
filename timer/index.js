@@ -1,5 +1,8 @@
-var util = require('util');
-var EventEmitter = require('events');
+// jshint esversion: 6
+
+const util = require('util');
+const EventEmitter = require('events');
+const AppError = require('../error').AppError;
 
 module.exports = (function () {
     // EVENTS
@@ -42,11 +45,11 @@ module.exports = (function () {
     // создадим экземпляр класса
     var _timer = new Timer();
 
-    // установка частоты опосы таймера
+    // установка частоты опроса таймера
     function setTickRate(rate) {
         try {
             if (typeof rate !== 'number' && isNaN(rate)) {
-                _timer.emit('error', new Error('Значение RATE не число, либо не определено'));
+                _timer.emit('error', new AppError(1, 0));
                 return;
             }
             tickRate = rate;
@@ -60,7 +63,7 @@ module.exports = (function () {
     function setTime (h, m) {
         try {
             if (h === undefined || m === undefined || h === null || m === null) {
-                _timer.emit('error', new Error('Один из аргументов null или undefined'));
+                _timer.emit('error', new AppError(2, 0));
                 checked = false;
                 return;
             }
@@ -71,20 +74,20 @@ module.exports = (function () {
 
             // проверка на число
             if (isNaN(h) || isNaN(m)) {
-                _timer.emit('error', new Error('Один из аргументов не число'));
+                _timer.emit('error', new AppError(3, 0));
                 checked = false;
                 return;
             }
 
             // проверка на допустимое значение
             if (h<0 || h>23) {
-                _timer.emit('error', new Error('параметр h может принимать значения от 0 до 23'));
+                _timer.emit('error', new AppError(4, 0));
                 checked = false;
                 return;
             }
 
             if (m<0 || m>59) {
-                _timer.emit('error', new Error('параметр m может принимать значения от 0 до 59'));
+                _timer.emit('error', new AppError(5, 0));
                 checked = false;
                 return;
             }
@@ -94,7 +97,8 @@ module.exports = (function () {
             time.m = m;
             checked = true;
         } catch (err) {
-            _timer.emit('error', err);
+            _timer.emit('error', new AppError(99, 1, err.message));
+            checked = false; // предотвратить запуск
         }
     }
 
@@ -105,7 +109,7 @@ module.exports = (function () {
             var date = new Date();
             // если curDate == timeoutDate emit ERROR при старте
             if (time.h == date.getHours() && time.m == date.getMinutes()) {
-                _timer.emit('error', new Error('текущая дата и дата выключения равны'));
+                _timer.emit('error', new AppError(6, 0));
                 return;
             }
 
@@ -115,7 +119,7 @@ module.exports = (function () {
                 tick();
             }
         } catch (err) {
-            _timer.emit('error', err);
+            _timer.emit('error', new AppError(99, 1, err.message));
         }
     }
 
@@ -129,6 +133,7 @@ module.exports = (function () {
 
     // цикл опроса таймера
     function tick() {
+      try{
         timeoutId = setTimeout(tick, 1000/tickRate);
 
         // получить текущую дату
@@ -144,37 +149,37 @@ module.exports = (function () {
             return;
         }
 
-        // остаток времени в процентах
-        var progress = null;
-
         // расчет времени в секундах с 00:00
         var finFullTime = (time.h * 3600 + time.m * 60)*1000;
-        var curFullTime = curH * 3600 * 1000 + curM * 60 * 1000 + curS * 1000 + date.getMilliseconds();
+        var curFullTime = (curH * 3600 + curM * 60  + curS) * 1000 + date.getMilliseconds();
 
         if (finFullTime < curFullTime) {
             // 24 * 3600 - кол-во секунд в сутках
-            progress = (24 * 3600 * 1000 + finFullTime) - curFullTime;
+            finFullTime = 24 * 3600 * 1000 + finFullTime - curFullTime;
         } else {
-            progress = finFullTime - curFullTime;
+            finFullTime = finFullTime - curFullTime;
         }
 
+        // при первом запуске запомнить общее время
         if (firstRun) {
-            totalTime = progress;
+          //TODO DELETE
+            console.log('totaltime: ' + finFullTime);
+            totalTime = finFullTime;
             firstRun = false;
         }
 
-        if (progress <= 0) {
-            progress = 0;
+        if (finFullTime <= 0) {
+            finFullTime = 0;
         }
-        var percentage = ((progress/totalTime) * 100).toFixed(2);
+        var percentage = ((finFullTime/totalTime) * 100).toFixed(2);
 
-        var hours = Math.floor(progress/(3600*1000)); // округлить вниз
+        var hours = Math.floor(finFullTime/(3600*1000)); // округлить вниз
 
         // сколько целых минут
-        var minutes = Math.floor((progress - (hours * 3600*1000))/60*1000); // округлить вниз
+        var minutes = Math.floor((finFullTime - (hours * 3600 * 1000))/(60*1000)); // округлить вниз
 
         // сколько целых секунд
-        var seconds = Math.round(((progress - (hours * 3600*1000) - (minutes * 60*1000))/1000));
+        var seconds = Math.round(((finFullTime - (hours * 3600*1000) - (minutes * 60*1000))/1000));
 
         _timer.emit('tick', {
             hours: hours,
@@ -182,6 +187,14 @@ module.exports = (function () {
             seconds: seconds,
             percentage: percentage
         });
+      }catch (err) {
+          _timer.emit('error', new AppError(99, 1, err.message));
+
+          // предотвратить повторное запуск tick
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+          }
+      }
     }
 
     // возвратить таймер

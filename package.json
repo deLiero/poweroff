@@ -8,7 +8,7 @@
     "dist": "electron-packager . timer --platform=win32 --arch=ia32 --ignore=node_modules/electron-*"
   },
   "jshint": {
-      "esversion": "6",
+      "esversion": "6"
   },
   "keywords": [
     "deLiero",

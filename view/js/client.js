@@ -208,6 +208,8 @@ minInputElem.addEventListener('wheel', function (e) {
     e.preventDefault ? e.preventDefault() : (e.returnValue = false);
 });
 
+
+// обработка событий таймера
 win.on('timer:started', function () {
     active = true;
 
@@ -249,7 +251,7 @@ win.on('timer:stopped', function () {
     progressElem.style.display = 'none';
 });
 
-win.on('timer:incorrect', function (err) {
+win.on('timer:error', function (err) {
     showMessage(err.message);
 });
 
