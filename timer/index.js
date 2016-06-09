@@ -7,8 +7,8 @@ const AppError = require('../error').AppError;
 module.exports = (function () {
     // EVENTS
     //   error - ошибка
-    //   timed - время вышло, после наступает событие stoped
-    //   tick  - опрос таймера 30 раз в сек /передает объект с остатком времени и процентом остатка
+    //   timed - время вышло, после наступает событие stopped
+    //   tick  - опрос таймера 3 раз в сек /передает объект с остатком времени и процентом остатка
     //   started - таймер запущен
     //   stopped - таймер остановлен
 
@@ -29,7 +29,7 @@ module.exports = (function () {
     // module variables
     var timeoutId = null; // id таймера
     var checked = false; // true - данные валидны
-    var tickRate = 30; // кол-во опросов таймера в секунду default = 30
+    var tickRate = 3; // кол-во опросов таймера в секунду default = 3
     var firstRun = true; // первый запуск
     var totalTime = null; // полное время в секундах до завершения
 
